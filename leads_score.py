@@ -30,8 +30,6 @@ def call_openrouter(prompt: str) -> str:
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",  
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://your-app-or-localhost", 
-        "X-Title": "LLM Lead Scorer",
     }
 
     payload = {
@@ -47,7 +45,6 @@ def call_openrouter(prompt: str) -> str:
     return data["choices"][0]["message"]["content"]
 
 def extract_json(text: str) -> dict:
-    # Grab the first {...} block from the response
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         raise ValueError(f"Could not find JSON in: {text}")
@@ -70,8 +67,7 @@ def main():
             company = row["Company"]
             prompt = build_prompt(company)
             raw_answer = call_openrouter(prompt)
-            print(company, "->", raw_answer)  # still log for debugging
-
+            print(company, "->", raw_answer)  
             try:
                 parsed = extract_json(raw_answer)
                 score = parsed.get("score")
